@@ -1,1 +1,1 @@
-# wareki_seireki_converter
+# wareki-seireki-converter
