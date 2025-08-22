@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>西暦⇄和暦変換アプリ</title>
+    <title>和暦⇄西暦変換アプリ</title>
     <style>
         * {
             margin: 0;
@@ -203,27 +203,15 @@
 </head>
 <body>
     <div class="container">
-        <h1>西暦⇄和暦変換</h1>
+        <h1>和暦⇄西暦変換</h1>
         
         <div class="tabs">
-            <button class="tab active" onclick="switchTab('seireki-to-wareki')">西暦→和暦</button>
-            <button class="tab" onclick="switchTab('wareki-to-seireki')">和暦→西暦</button>
-        </div>
-        
-        <!-- 西暦→和暦 -->
-        <div id="seireki-to-wareki" class="tab-content active">
-            <div class="input-section">
-                <label for="seireki-year">西暦年を入力してください</label>
-                <input type="number" id="seireki-year" placeholder="例: 2024" min="1868" max="2100">
-            </div>
-            
-            <div id="seireki-result" class="result">
-                <div style="color: #999;">西暦を入力すると自動的に和暦に変換されます</div>
-            </div>
+            <button class="tab active" onclick="switchTab('wareki-to-seireki')">和暦→西暦</button>
+            <button class="tab" onclick="switchTab('seireki-to-wareki')">西暦→和暦</button>
         </div>
         
         <!-- 和暦→西暦 -->
-        <div id="wareki-to-seireki" class="tab-content">
+        <div id="wareki-to-seireki" class="tab-content active">
             <div class="input-section">
                 <label>和暦を選択・入力してください</label>
                 <div class="wareki-inputs">
@@ -242,6 +230,18 @@
             
             <div id="wareki-result" class="result">
                 <div style="color: #999;">元号と年を選択すると自動的に西暦に変換されます</div>
+            </div>
+        </div>
+        
+        <!-- 西暦→和暦 -->
+        <div id="seireki-to-wareki" class="tab-content">
+            <div class="input-section">
+                <label for="seireki-year">西暦年を入力してください</label>
+                <input type="number" id="seireki-year" placeholder="例: 2024" min="1868" max="2100">
+            </div>
+            
+            <div id="seireki-result" class="result">
+                <div style="color: #999;">西暦を入力すると自動的に和暦に変換されます</div>
             </div>
         </div>
         
