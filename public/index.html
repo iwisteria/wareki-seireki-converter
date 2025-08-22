@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>西暦⇄和暦変換アプリ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Hiragino Sans', 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            animation: slideIn 0.6s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.2em;
+            font-weight: 300;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+            border: 2px solid #e1e1e1;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 15px 20px;
+            background: #f8f9ff;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+            color: #666;
+        }
+        
+        .tab.active {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .tab:hover:not(.active) {
+            background: #e8ebff;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .input-section {
+            margin-bottom: 30px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #555;
+            font-weight: 500;
+            font-size: 1.1em;
+        }
+        
+        input[type="number"], select {
+            padding: 15px 20px;
+            border: 2px solid #e1e1e1;
+            border-radius: 12px;
+            font-size: 1.2em;
+            text-align: center;
+            transition: all 0.3s ease;
+            background: #f8f9ff;
+            margin: 5px;
+            appearance: auto;
+            -webkit-appearance: auto;
+        }
+        
+        input[type="number"] {
+            width: 120px;
+        }
+        
+        #seireki-year {
+            width: 200px;
+        }
+        
+        select {
+            width: 160px;
+            text-align: left;
+            padding-right: 30px;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.2);
+        }
+        
+        .wareki-inputs {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .result {
+            margin-top: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #f8f9ff, #e8ebff);
+            border-radius: 15px;
+            border: 2px solid #e1e8ff;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .result-text {
+            font-size: 1.8em;
+            color: #333;
+            font-weight: 500;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .error {
+            color: #e74c3c;
+            font-size: 1.1em;
+        }
+        
+        .era-info {
+            margin-top: 15px;
+            font-size: 0.9em;
+            color: #666;
+            line-height: 1.5;
+        }
+        
+        .examples {
+            margin-top: 20px;
+            text-align: left;
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 10px;
+        }
+        
+        .examples h3 {
+            margin-bottom: 10px;
+            color: #555;
+            font-size: 1em;
+        }
+        
+        .examples ul {
+            list-style-type: none;
+            font-size: 0.9em;
+            color: #666;
+        }
+        
+        .examples li {
+            margin: 5px 0;
+            padding: 3px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>西暦⇄和暦変換</h1>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('seireki-to-wareki')">西暦→和暦</button>
+            <button class="tab" onclick="switchTab('wareki-to-seireki')">和暦→西暦</button>
+        </div>
+        
+        <!-- 西暦→和暦 -->
+        <div id="seireki-to-wareki" class="tab-content active">
+            <div class="input-section">
+                <label for="seireki-year">西暦年を入力してください</label>
+                <input type="number" id="seireki-year" placeholder="例: 2024" min="1868" max="2100">
+            </div>
+            
+            <div id="seireki-result" class="result">
+                <div style="color: #999;">西暦を入力すると自動的に和暦に変換されます</div>
+            </div>
+        </div>
+        
+        <!-- 和暦→西暦 -->
+        <div id="wareki-to-seireki" class="tab-content">
+            <div class="input-section">
+                <label>和暦を選択・入力してください</label>
+                <div class="wareki-inputs">
+                    <select id="era-select">
+                        <option value="">元号選択</option>
+                        <option value="令和">令和</option>
+                        <option value="平成">平成</option>
+                        <option value="昭和">昭和</option>
+                        <option value="大正">大正</option>
+                        <option value="明治">明治</option>
+                    </select>
+                    <input type="number" id="wareki-year" placeholder="年" min="1" max="100">
+                    <span style="font-size: 1.2em; margin-left: 5px;">年</span>
+                </div>
+            </div>
+            
+            <div id="wareki-result" class="result">
+                <div style="color: #999;">元号と年を選択すると自動的に西暦に変換されます</div>
+            </div>
+        </div>
+        
+        <div class="examples">
+            <h3>📅 対応している元号</h3>
+            <ul>
+                <li>• 明治：1868年～1912年（明治元年～45年）</li>
+                <li>• 大正：1912年～1926年（大正元年～15年）</li>
+                <li>• 昭和：1926年～1989年（昭和元年～64年）</li>
+                <li>• 平成：1989年～2019年（平成元年～31年）</li>
+                <li>• 令和：2019年～現在（令和元年～）</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // 元号の定義
+        const eras = [
+            { name: '令和', start: 2019, kanji: '令和' },
+            { name: '平成', start: 1989, kanji: '平成' },
+            { name: '昭和', start: 1926, kanji: '昭和' },
+            { name: '大正', start: 1912, kanji: '大正' },
+            { name: '明治', start: 1868, kanji: '明治' }
+        ];
+
+        // タブ切り替え
+        function switchTab(tabId) {
+            // すべてのタブとコンテンツの active クラスを削除
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            // クリックされたタブとコンテンツに active クラスを追加
+            event.target.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        // 西暦→和暦変換
+        function convertToWareki() {
+            const yearInput = document.getElementById('seireki-year');
+            const resultDiv = document.getElementById('seireki-result');
+            const year = parseInt(yearInput.value);
+            
+            if (!year || year < 1868) {
+                resultDiv.innerHTML = '<div class="error">1868年以降の年を入力してください</div>';
+                return;
+            }
+            
+            if (year > 2100) {
+                resultDiv.innerHTML = '<div class="error">2100年以前の年を入力してください</div>';
+                return;
+            }
+            
+            const currentYear = new Date().getFullYear();
+            let currentEra = null;
+            
+            // 現在より未来の年は令和で表示
+            if (year > currentYear) {
+                currentEra = eras[0]; // 令和
+            } else {
+                // 過去の年は適切な元号を見つける
+                for (let era of eras) {
+                    if (year >= era.start) {
+                        currentEra = era;
+                        break;
+                    }
+                }
+            }
+            
+            if (!currentEra) {
+                resultDiv.innerHTML = '<div class="error">対応していない年です</div>';
+                return;
+            }
+            
+            const eraYear = year - currentEra.start + 1;
+            let eraYearText;
+            
+            if (eraYear === 1) {
+                eraYearText = '元年';
+            } else {
+                eraYearText = eraYear + '年';
+            }
+            
+            const warekiResult = currentEra.kanji + eraYearText;
+            const isFutureYear = year > currentYear;
+            
+            resultDiv.innerHTML = `
+                <div>
+                    <div class="result-text">${warekiResult}</div>
+                    <div class="era-info">
+                        西暦${year}年 = ${warekiResult}<br>
+                        ${currentEra.name}${eraYear === 1 ? '元年' : eraYear + '年目'}${isFutureYear ? '（現在の元号で表示）' : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        // 和暦→西暦変換
+        function convertToSeireki() {
+            const eraSelect = document.getElementById('era-select');
+            const warekiYearInput = document.getElementById('wareki-year');
+            const resultDiv = document.getElementById('wareki-result');
+            
+            const selectedEra = eraSelect.value;
+            const warekiYear = parseInt(warekiYearInput.value);
+            
+            if (!selectedEra) {
+                resultDiv.innerHTML = '<div style="color: #999;">元号と年を選択すると自動的に西暦に変換されます</div>';
+                return;
+            }
+            
+            if (!warekiYear || warekiYear < 1) {
+                resultDiv.innerHTML = '<div class="error">1年以上の年を入力してください</div>';
+                return;
+            }
+            
+            // 選択された元号の情報を取得
+            const era = eras.find(e => e.name === selectedEra);
+            if (!era) {
+                resultDiv.innerHTML = '<div class="error">無効な元号です</div>';
+                return;
+            }
+            
+            // 西暦年を計算
+            const seirekiYear = era.start + warekiYear - 1;
+            
+            // 元号の終了年をチェック
+            const nextEra = eras.find(e => e.start > era.start);
+            const eraEndYear = nextEra ? nextEra.start - 1 : new Date().getFullYear() + 50; // 現在の元号の場合は未来まで
+            
+            if (seirekiYear > eraEndYear) {
+                const maxYear = eraEndYear - era.start + 1;
+                resultDiv.innerHTML = `<div class="error">${selectedEra}は${maxYear}年までです</div>`;
+                return;
+            }
+            
+            if (seirekiYear > 2100) {
+                resultDiv.innerHTML = '<div class="error">2100年以前の範囲で入力してください</div>';
+                return;
+            }
+            
+            const warekiYearText = warekiYear === 1 ? '元年' : warekiYear + '年';
+            const warekiDisplay = selectedEra + warekiYearText;
+            
+            resultDiv.innerHTML = `
+                <div>
+                    <div class="result-text">西暦${seirekiYear}年</div>
+                    <div class="era-info">
+                        ${warekiDisplay} = 西暦${seirekiYear}年
+                    </div>
+                </div>
+            `;
+        }
+
+        function clearSeirekiResult() {
+            document.getElementById('seireki-year').value = '';
+            document.getElementById('seireki-result').innerHTML = '<div style="color: #999;">西暦を入力すると自動的に和暦に変換されます</div>';
+        }
+
+        function clearWarekiResult() {
+            document.getElementById('era-select').value = '';
+            document.getElementById('wareki-year').value = '';
+            document.getElementById('wareki-result').innerHTML = '<div style="color: #999;">元号と年を選択すると自動的に西暦に変換されます</div>';
+        }
+
+        // フォーカス時にプレースホルダーをクリア
+        document.getElementById('seireki-year').addEventListener('focus', function() {
+            this.placeholder = '';
+        });
+        
+        document.getElementById('seireki-year').addEventListener('blur', function() {
+            if (this.value === '') {
+                this.placeholder = '例: 2024';
+            }
+        });
+        
+        document.getElementById('wareki-year').addEventListener('focus', function() {
+            this.placeholder = '';
+        });
+        
+        document.getElementById('wareki-year').addEventListener('blur', function() {
+            if (this.value === '') {
+                this.placeholder = '年';
+            }
+        });
+
+        // イベントリスナー設定
+        
+        // 西暦→和暦のリアルタイム変換
+        document.getElementById('seireki-year').addEventListener('input', function() {
+            const year = parseInt(this.value);
+            if (year && this.value.length === 4 && year >= 1868 && year <= 2100) {
+                convertToWareki();
+            } else if (this.value === '') {
+                clearSeirekiResult();
+            }
+        });
+        
+        // 和暦→西暦のリアルタイム変換
+        document.getElementById('era-select').addEventListener('change', convertToSeireki);
+        document.getElementById('wareki-year').addEventListener('input', function() {
+            const year = parseInt(this.value);
+            if (year && year > 0) {
+                convertToSeireki();
+            } else if (this.value === '') {
+                const era = document.getElementById('era-select').value;
+                if (era) {
+                    convertToSeireki();
+                } else {
+                    clearWarekiResult();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
